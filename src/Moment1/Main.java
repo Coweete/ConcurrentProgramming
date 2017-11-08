@@ -19,7 +19,7 @@ public class Main extends Application {
 
     public static void main(String[] args)
     {
-        //launch(args);  //java fx
+        launch(args);  //java fx
 
         TaskToDo task = new TaskToDo("Apu");
         Thread t1 = new Thread(task);
@@ -38,7 +38,7 @@ public class Main extends Application {
         for (int i = 0; i < 10; i++)
         {
             //Console.foregroundColor = ConsoleColor.Green;
-            System.out.println ( "Greetings from Main thread!" );
+            System.out.println ( "Greetings from Assignment1 thread!" );
             try {
                 Thread.sleep(500);
             }
@@ -47,7 +47,7 @@ public class Main extends Application {
                 System.out.println("Something went wrong at the end!");
             }
         }
-        System.out.println ( "Main thread terminated!" );
+        System.out.println ( "Assignment1 thread terminated!" );
         System.out.println ( "---------------------------------" );
     }
 }

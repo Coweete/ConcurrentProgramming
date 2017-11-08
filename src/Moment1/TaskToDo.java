@@ -22,7 +22,11 @@ public class TaskToDo implements Runnable
 
       }
 
-      void Sleep(int milliSecons  )
+    /**
+     *
+     * @param milliSecons
+     */
+    void Sleep(int milliSecons  )
       {
           try {
               // thread to sleep for x milliseconds
@@ -32,7 +36,10 @@ public class TaskToDo implements Runnable
           }
       }
 
-        void UpdateList ( )
+    /**
+     *
+     */
+    void UpdateList ( )
         {
             for (int i = 0; i < 10; i++)
             {
@@ -45,7 +52,9 @@ public class TaskToDo implements Runnable
 
         }
 
-
+    /**
+     *
+     */
         void UpdateList2 ( )
         {
             for (int i = 0; i < 10; i++)
