@@ -1,8 +1,11 @@
 package Assigment1;
 
+import sun.java2d.loops.DrawPolygons;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -11,29 +14,31 @@ import javax.swing.border.*;
  * The GUI for assignment 1, DualThreads
  */
 public class GUIAssignment1 {
+
     /**
      * These are the components you need to handle.
      * You have to add listeners and/or code
      */
-    private JFrame frame;        // The Assignment1 window
-    private JButton btnDisplay;    // Start thread moving display
-    private JButton btnDStop;    // Stop moving display thread
-    private JButton btnTriangle;// Start moving graphics thread
-    private JButton btnTStop;    // Stop moving graphics thread
-    private JButton btnOpen;    // Open audio file
-    private JButton btnPlay;    // Start playing audio
-    private JButton btnStop;    // Stop playing
-    private JButton btnGo;        // Start game catch me
-    private JPanel pnlMove;        // The panel to move display in
-    private JPanel pnlRotate;    // The panel to move graphics in
-    private JPanel pnlGame;        // The panel to play in
-    private JLabel lblPlaying;    // Playing text
-    private JLabel lblAudio;    // Audio file
-    private JTextArea txtHits;          // Dispaly hits
-    private JFileChooser fileChooser;
-    private JComboBox cmbSkill;         // Skill combo box, needs to be filled in
+    private JFrame frame;                   // The Assignment1 window
+    private JButton btnDisplay;             // Start thread moving display
+    private JButton btnDStop;               // Stop moving display thread
+    private JButton btnTriangle;            // Start moving graphics thread
+    private JButton btnTStop;               // Stop moving graphics thread
+    private JButton btnOpen;                // Open audio file
+    private JButton btnPlay;                // Start playing audio
+    private JButton btnStop;                // Stop playing
+    private JButton btnGo;                  // Start game catch me
+    private JPanel pnlMove;                 // The panel to move display in
+    private JTrianglePanel pnlRotate;
+    private JPanel pnlGame;                 // The panel to play in
+    private JLabel lblPlaying;              // Playing text
+    private JLabel lblAudio;                // Audio file
+    private JLabel lblRandomText;           // Display text on random position
+    private JTextArea txtHits;              // Dispaly hits
+    private JComboBox cmbSkill;             // Skill combo box, needs to be filled in
     private ButtonListener buttonListener;
     private Controller controller;
+    private JFileChooser fileChooser;
 
     /**
      * Constructor
@@ -72,6 +77,7 @@ public class GUIAssignment1 {
         fileChooser = new JFileChooser();
         buttonListener = new ButtonListener();
 
+
         // Add labels and buttons to this panel
         lblPlaying = new JLabel("Now Playing: ");    // Needs to be alteraed
         lblPlaying.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -105,6 +111,8 @@ public class GUIAssignment1 {
         pnlDisplay.setLayout(null);
 
         // Add buttons and drawing panel to this panel
+        lblRandomText = new JLabel();
+        lblRandomText.setBackground(Color.WHITE);
         btnDisplay = new JButton("Start Display");
         btnDisplay.setBounds(10, 226, 121, 23);
         btnDisplay.addActionListener(buttonListener);
@@ -118,6 +126,7 @@ public class GUIAssignment1 {
         Border b21 = BorderFactory.createLineBorder(Color.black);
         pnlMove.setBorder(b21);
         pnlDisplay.add(pnlMove);
+        pnlMove.add(lblRandomText);
         frame.add(pnlDisplay);
 
         // The moving graphics outer panel
@@ -136,11 +145,12 @@ public class GUIAssignment1 {
         btnTStop.setBounds(135, 226, 75, 23);
         btnTStop.addActionListener(buttonListener);
         pnlTriangle.add(btnTStop);
-        pnlRotate = new JPanel();
+        pnlRotate = new JTrianglePanel();
         pnlRotate.setBounds(10, 19, 200, 200);
         Border b31 = BorderFactory.createLineBorder(Color.black);
         pnlRotate.setBorder(b31);
         pnlTriangle.add(pnlRotate);
+
         // Add this to main window
         frame.add(pnlTriangle);
 
@@ -181,10 +191,9 @@ public class GUIAssignment1 {
         frame.add(pnlCatchme);
     }
 
-    //@TODO HÄR ?
     public File openFIleChooser() {
         int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION){
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             System.out.println("Selected File:" + selectedFile.toString());
             return selectedFile;
@@ -192,18 +201,39 @@ public class GUIAssignment1 {
         return null;
     }
 
+    public void placeRandomText(String text,int x,int y){
+        lblRandomText.setText(text);
+        lblRandomText.setLocation(x,y);
+    }
 
+    public void rotateTriangle(double angle){
+        pnlRotate.setAngle(angle);
+        pnlRotate.repaint();
+    }
+
+    public Dimension getRandomTextDimension(){
+        return lblRandomText.getSize();
+    }
+
+    public Dimension getDisplayDimension(){
+        return pnlMove.getSize();
+    }
+
+    /**
+     * Private class that listen to all the buttons on the gui.
+     */
     private class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            //Get the selected button
             Object btnClicked = e.getSource();
 
             if (btnClicked.equals(btnDisplay)) {
-                System.out.println("btndisplay");
+                controller.startDisplay();
             } else if (btnClicked.equals(btnDStop)) {
-                System.out.println("btnDstop");
+                controller.stopDisplay();
             } else if (btnClicked.equals(btnGo)) {
                 System.out.println("btnGo");
             } else if (btnClicked.equals(btnOpen)) {
@@ -213,12 +243,43 @@ public class GUIAssignment1 {
             } else if (btnClicked.equals(btnStop)) {
                 controller.stoppMusic();
             } else if (btnClicked.equals(btnTriangle)) {
-                System.out.println("btnTriangle");
+                controller.startRotate();
             } else if (btnClicked.equals(btnTStop)) {
-                System.out.println("btnTStop");
+                controller.stopRotate();
             }
+        }
+    }
+
+    /**
+     * Inner class that lets an polygon rotate around
+     * a point.
+     */
+    private class JTrianglePanel extends JPanel {
+
+        private Polygon polygon;
+        private int[] xpos = {75,25,125};
+        private int[] ypos = {25,75,75};
+        private int height,length;
+        private double angle;
 
 
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            polygon = new Polygon(xpos,ypos,3);
+            this.length = (xpos[2] + xpos[1]) /2;
+            this.height = (ypos[0] + ypos[1]) /2;
+            Graphics2D g2 = (Graphics2D) g;
+            AffineTransform affineTransform = g2.getTransform();
+            g2.setTransform(AffineTransform.getRotateInstance(Math.toRadians(angle),length,height));
+            g2.setColor(Color.black);
+            g2.drawPolygon(polygon);
+            g2.setTransform(affineTransform);
+        }
+
+        public void setAngle(double angle) {
+            this.angle = angle;
         }
     }
 }

@@ -9,6 +9,7 @@ public class Assignment1 extends Application {
 
     public static void main(String[] args) {
         Controller controller = new Controller();
+        //Starts the java fx thread
         launch(args);
     }
 

@@ -19,7 +19,7 @@ public class Main extends Application {
 
     public static void main(String[] args)
     {
-        launch(args);  //java fx
+        //launch(args);  //java fx
 
         TaskToDo task = new TaskToDo("Apu");
         Thread t1 = new Thread(task);
