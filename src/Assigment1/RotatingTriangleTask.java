@@ -1,47 +1,53 @@
 package Assigment1;
 
-import java.awt.*;
+/**
+ * Class that rotates an triangle.
+ *
+ * @author Jonatan Fridsten
+ */
+public class RotatingTriangleTask implements Runnable {
 
-public class RotatingTriangleTask implements Runnable{
+    private Controller controller;
+    private volatile boolean isRunning;
+    private double angle;
 
-    private Controller          controller;
-    private volatile boolean    isRunning;
-    private double              angle;
-
+    /**
+     * Constructor
+     *
+     * @param controller Instance of the controller
+     */
     public RotatingTriangleTask(Controller controller) {
         this.controller = controller;
     }
 
     @Override
     public void run() {
-
-        while (true){
-            if (isRunning){
-                if (angle > 360){
+        //Lets the thread running all the time
+        while (true) {
+            //If the thread should be running or not
+            if (isRunning) {
+                //Rests the angle
+                if (angle > 360) {
                     angle = 0;
                 }
                 controller.rotateTriangle(angle);
                 angle++;
             }
 
-            sleep(10);
+            //Tries too sleep
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
-    public void sleep(int miliSeconds){
-
-        try{
-            Thread.sleep(miliSeconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
+    /**
+     * Sets if the thread should be doing something or sleep
+     * @param running true == running, false == sleep
+     */
     public void setRunning(boolean running) {
         isRunning = running;
     }

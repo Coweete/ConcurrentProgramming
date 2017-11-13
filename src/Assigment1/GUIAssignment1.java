@@ -1,7 +1,5 @@
 package Assigment1;
 
-import sun.java2d.loops.DrawPolygons;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -191,31 +189,45 @@ public class GUIAssignment1 {
         frame.add(pnlCatchme);
     }
 
-    public File openFIleChooser() {
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            System.out.println("Selected File:" + selectedFile.toString());
-            return selectedFile;
-        }
-        return null;
-    }
 
-    public void placeRandomText(String text,int x,int y){
+    /**
+     * Places a text string at the position from the
+     * x and y coordinates.
+     *
+     * @param text The text that will be displayed.
+     * @param x    Position on the x-axis.
+     * @param y    Position on the y-axis.
+     */
+    public void placeRandomText(String text, int x, int y) {
         lblRandomText.setText(text);
-        lblRandomText.setLocation(x,y);
+        lblRandomText.setLocation(x, y);
     }
 
-    public void rotateTriangle(double angle){
+    /**
+     * Rotates an triangle on the selected panel.
+     *
+     * @param angle The angle that the triangle should rotate to.
+     */
+    public void rotateTriangle(double angle) {
         pnlRotate.setAngle(angle);
         pnlRotate.repaint();
     }
 
-    public Dimension getRandomTextDimension(){
+    /**
+     * Returns the dimension on Random text label.
+     *
+     * @return The dimension.
+     */
+    public Dimension getRandomTextDimension() {
         return lblRandomText.getSize();
     }
 
-    public Dimension getDisplayDimension(){
+    /**
+     * Returns the dimension on the Move panel.
+     *
+     * @return The dimension.
+     */
+    public Dimension getDisplayDimension() {
         return pnlMove.getSize();
     }
 
@@ -230,18 +242,13 @@ public class GUIAssignment1 {
             //Get the selected button
             Object btnClicked = e.getSource();
 
+            //Finds the selected button then calls a method in the controller
             if (btnClicked.equals(btnDisplay)) {
                 controller.startDisplay();
             } else if (btnClicked.equals(btnDStop)) {
                 controller.stopDisplay();
             } else if (btnClicked.equals(btnGo)) {
                 System.out.println("btnGo");
-            } else if (btnClicked.equals(btnOpen)) {
-                controller.openFileChooser();
-            } else if (btnClicked.equals(btnPlay)) {
-                controller.startMusic();
-            } else if (btnClicked.equals(btnStop)) {
-                controller.stoppMusic();
             } else if (btnClicked.equals(btnTriangle)) {
                 controller.startRotate();
             } else if (btnClicked.equals(btnTStop)) {
@@ -257,9 +264,9 @@ public class GUIAssignment1 {
     private class JTrianglePanel extends JPanel {
 
         private Polygon polygon;
-        private int[] xpos = {75,25,125};
-        private int[] ypos = {25,75,75};
-        private int height,length;
+        private int[] xpos = {75, 25, 125};
+        private int[] ypos = {25, 75, 75};
+        private int height, length;
         private double angle;
 
 
@@ -267,12 +274,13 @@ public class GUIAssignment1 {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            polygon = new Polygon(xpos,ypos,3);
-            this.length = (xpos[2] + xpos[1]) /2;
-            this.height = (ypos[0] + ypos[1]) /2;
+            //Creates an polygon then rotate it
+            polygon = new Polygon(xpos, ypos, 3);
+            this.length = (xpos[2] + xpos[1]) / 2;
+            this.height = (ypos[0] + ypos[1]) / 2;
             Graphics2D g2 = (Graphics2D) g;
             AffineTransform affineTransform = g2.getTransform();
-            g2.setTransform(AffineTransform.getRotateInstance(Math.toRadians(angle),length,height));
+            g2.setTransform(AffineTransform.getRotateInstance(Math.toRadians(angle), length, height));
             g2.setColor(Color.black);
             g2.drawPolygon(polygon);
             g2.setTransform(affineTransform);
