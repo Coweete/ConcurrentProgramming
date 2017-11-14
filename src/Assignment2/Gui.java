@@ -105,6 +105,7 @@ public class Gui
         ButtonGroup grp = new ButtonGroup();
         grp.add(bSync);
         grp.add(bAsync);
+        bSync.setSelected(true);
         // then the label and textbox to input string to transfer
         JLabel lab5 = new JLabel("String to Transfer:");
         lab5.setBounds(6, 99, 141, 13);
@@ -166,6 +167,13 @@ public class Gui
         lblTrans.setText(text);
     }
 
+    public void clearText() {
+        listW.setText(null);
+        listR.setText(null);
+        lblTrans.setText("Transmitted string goes here");
+        lblRec.setText("Received string goes here");
+    }
+
 
     private class ButtonListener implements ActionListener{
 
@@ -175,7 +183,8 @@ public class Gui
             Object btnPressed = e.getSource();
 
             if (btnPressed.equals(btnRun)){
-                controller.startRun();
+                boolean b = bSync.isSelected();
+                controller.startRun(b);
             }else if (btnPressed.equals(btnClear)){
                 controller.clear();
             }

@@ -1,24 +1,24 @@
 package Assignment2;
 
-import java.util.LinkedList;
-
 public class CharacterBuffer {
 
-    private LinkedList<Character> linkedList;
+    private Character character;
 
-    public CharacterBuffer(){
-        linkedList = new LinkedList<>();
+    public CharacterBuffer() {
+
     }
 
-    public synchronized boolean hasCharacter(){
-        return linkedList.size() >= 1;
+    public boolean hasCharacter() {
+        return character != null;
     }
 
-    public synchronized void addCharacter(char c){
-        linkedList.addFirst(c);
+    public void addCharacter(char c) {
+        character = c;
     }
 
-    public synchronized char removeCharacter(){
-        return linkedList.removeFirst();
+    public char getCharacter() {
+        char temp = character;
+        character = null;
+        return temp;
     }
 }
