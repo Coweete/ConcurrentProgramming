@@ -15,8 +15,7 @@ public class Controller {
     private WriterTask writerTask;
     private Thread readerThread;
     private Thread writerThread;
-    private CharacterBufferSynchronized characterBufferSynchronized;
-    private CharacterBuffer characterBuffer;
+    private Assignment2.CharacterBuffer characterBuffer;
 
     /**
      * A constructor
@@ -24,10 +23,9 @@ public class Controller {
     public Controller() {
 
         //Creates new instances for the following objects
-        characterBufferSynchronized = new CharacterBufferSynchronized();
-        characterBuffer = new CharacterBuffer();
-        readerTask = new ReaderTask(this, characterBufferSynchronized, characterBuffer);
-        writerTask = new WriterTask(this, characterBufferSynchronized, characterBuffer);
+        characterBuffer = new Assignment2.CharacterBuffer();
+        readerTask = new ReaderTask(this, characterBuffer);
+        writerTask = new WriterTask(this, characterBuffer);
         gui = new Gui(this);
 
         //Display the gui.
@@ -37,9 +35,12 @@ public class Controller {
     /**
      * Starts the write/read process
      */
-    public void startRun() {
+    public void startRun(boolean sync) {
         gui.setBtnRunEnabled(false);
         gui.setBtnClearEnabled(true);
+
+        readerTask.setSync(sync);
+        writerTask.setSync(sync);
 
         //The input from gui
         String temp = gui.getInputText();
@@ -63,9 +64,6 @@ public class Controller {
     public void clear() {
         readerTask.setRunning(false);
         writerTask.setRunning(false);
-        if (characterBufferSynchronized.hasCharacter()) {
-            characterBufferSynchronized.removeCharacter();
-        }
         gui.clearText();
         gui.setResult(Color.WHITE, "Status goes here");
         gui.setBtnClearEnabled(false);

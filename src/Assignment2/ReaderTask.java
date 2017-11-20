@@ -10,8 +10,8 @@ import java.util.Random;
 public class ReaderTask implements Runnable {
 
     private volatile boolean isRunning;
+    private volatile boolean sync;
     private Controller controller;
-    private CharacterBufferSynchronized characterBufferSynchronized;
     private CharacterBuffer characterBuffer;
     private char[] chars;
     private Random random;
@@ -21,12 +21,10 @@ public class ReaderTask implements Runnable {
      * The constructor
      *
      * @param controller                  Controller object
-     * @param characterBufferSynchronized Sync buffer
-     * @param characterBuffer             Async buffer
+     * @param characterBuffer Sync buffer
      */
-    public ReaderTask(Controller controller, CharacterBufferSynchronized characterBufferSynchronized, CharacterBuffer characterBuffer) {
+    public ReaderTask(Controller controller, CharacterBuffer characterBuffer) {
         this.controller = controller;
-        this.characterBufferSynchronized = characterBufferSynchronized;
         this.characterBuffer = characterBuffer;
         random = new Random();
         isRunning = false;
@@ -37,13 +35,43 @@ public class ReaderTask implements Runnable {
      */
     @Override
     public void run() {
+        if (!sync) {
+            while (!characterBuffer.hasCharacter()) ;
+        }
         while (isRunning) {
-            //Checks if there is something in the buffer
-            if (characterBufferSynchronized.hasCharacter()) {
-                char temp = characterBufferSynchronized.removeCharacter();
+            if (sync) {
+                //Checks if there is something in the buffer
+                Character temp = characterBuffer.getFromBuffer();
+                if (temp != null) {
+                    controller.printReader("Reading " + temp + "\n");
+                    chars[counter] = temp;
+                    counter++;
+
+                    //Checks if there should be
+                    // more in the buffer or not
+                    if (counter >= endLength) {
+                        isRunning = false;
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 0; i < chars.length; i++) {
+                            stringBuilder.append(chars[i]);
+
+                        }
+                        String res = stringBuilder.toString();
+                        //Prints and calls the compare method
+                        controller.printReaderString(res);
+                        controller.compareStrings(res);
+                    }
+                } else {
+                    controller.printReader("No data, Reader waits\n");
+                }
+
+            } else {
+
+                char temp = characterBuffer.getCharacter();
                 controller.printReader("Reading " + temp + "\n");
                 chars[counter] = temp;
                 counter++;
+
 
                 //Checks if there should be
                 // more in the buffer or not
@@ -59,17 +87,16 @@ public class ReaderTask implements Runnable {
                     controller.printReaderString(res);
                     controller.compareStrings(res);
                 }
-
-            } else {
-                controller.printReader("No data, Reader waits" + "\n");
             }
+
             try {
                 //Tries to sleep for a random amount of time
-                Thread.sleep((random.nextInt(25) + 5));
+                Thread.sleep((random.nextInt(50) + 5));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     /**
@@ -94,4 +121,7 @@ public class ReaderTask implements Runnable {
         endLength = length;
     }
 
+    public void setSync(boolean sync) {
+        this.sync = sync;
+    }
 }

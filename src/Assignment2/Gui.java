@@ -104,7 +104,6 @@ public class Gui {
         pnlTest.add(bSync);
         bAsync = new JRadioButton("Asyncronous Mode", true);
         bAsync.setBounds(8, 61, 141, 17);
-        bAsync.setEnabled(false);
         pnlTest.add(bAsync);
         ButtonGroup grp = new ButtonGroup();
         grp.add(bSync);
@@ -238,7 +237,8 @@ public class Gui {
             Object btnPressed = e.getSource();
 
             if (btnPressed.equals(btnRun)) {
-                controller.startRun();
+                boolean temp = bSync.isSelected();
+                controller.startRun(temp);
             } else if (btnPressed.equals(btnClear)) {
                 controller.clear();
             }
