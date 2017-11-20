@@ -9,30 +9,31 @@ import javax.swing.*;
 /**
  * The GUI for assignment 2
  */
-public class Gui
-{
+public class Gui {
     /**
      * These are the components you need to handle.
      * You have to add listeners and/or code
      */
-    private JFrame frame;			// The Main window
-    private JLabel lblTrans;		// The transmitted text
-    private JLabel lblRec;			// The received text
-    private JRadioButton bSync;		// The sync radiobutton
-    private JRadioButton bAsync;	// The async radiobutton
-    private JTextField txtTrans;	// The input field for string to transfer
+    private JFrame frame;            // The Main window
+    private JLabel lblTrans;        // The transmitted text
+    private JLabel lblRec;            // The received text
+    private JRadioButton bSync;        // The sync radiobutton
+    private JRadioButton bAsync;    // The async radiobutton
+    private JTextField txtTrans;    // The input field for string to transfer
     private JButton btnRun;         // The run button
-    private JButton btnClear;		// The clear button
-    private JPanel pnlRes;			// The colored result area
-    private JLabel lblStatus;		// The status of the transmission
-    private JTextArea listW;		// The write logger pane
-    private JTextArea listR;		// The read logger pane
+    private JButton btnClear;        // The clear button
+    private JPanel pnlRes;            // The colored result area
+    private JLabel lblStatus;        // The status of the transmission
+    private JTextArea listW;        // The write logger pane
+    private JScrollPane paneW;      // Makes the output scrollable
+    private JTextArea listR;        // The read logger pane
+    private JScrollPane paneR;      // Makes the output scrollable
     private Controller controller;  // The controller link
 
     /**
      * Constructor
      */
-    public Gui(Controller controller){
+    public Gui(Controller controller) {
         this.controller = controller;
     }
 
@@ -45,16 +46,16 @@ public class Gui
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
         frame.setTitle("Concurrent Read/Write");
-        initializeGUI();					// Fill in components
+        initializeGUI();                    // Fill in components
         frame.setVisible(true);
-        frame.setResizable(false);			// Prevent user from change size
-        frame.setLocationRelativeTo(null);	// Start middle screen
+        frame.setResizable(false);            // Prevent user from change size
+        frame.setLocationRelativeTo(null);    // Start middle screen
     }
 
     /**
      * Sets up the GUI with components
      */
-    private void initializeGUI(){
+    private void initializeGUI() {
         // First, create the static components
         // First the 4 static texts
         ButtonListener buttonListener = new ButtonListener();
@@ -73,25 +74,27 @@ public class Gui
         frame.add(lab4);
         // Then add the two lists (of string) for logging transfer
         listW = new JTextArea();
-        listW.setBounds(13, 45, 197, 342);
-        listW.setBorder(BorderFactory.createLineBorder(Color.black));
         listW.setEditable(false);
-        frame.add(listW);
+        paneW = new JScrollPane(listW);
+        paneW.setBounds(13, 45, 197, 342);
+        paneW.setBorder(BorderFactory.createLineBorder(Color.black));
+        frame.add(paneW);
         listR = new JTextArea();
-        listR.setBounds(386, 45, 183, 342);
-        listR.setBorder(BorderFactory.createLineBorder(Color.black));
         listR.setEditable(false);
-        frame.add(listR);
+        paneR = new JScrollPane(listR);
+        paneR.setBounds(386, 45, 183, 342);
+        paneR.setBorder(BorderFactory.createLineBorder(Color.black));
+        frame.add(paneR);
         // Next the panel that holds the "running" part
         JPanel pnlTest = new JPanel();
         pnlTest.setBorder(BorderFactory.createTitledBorder("Concurrent Tester"));
         pnlTest.setBounds(220, 45, 155, 342);
         pnlTest.setLayout(null);
         frame.add(pnlTest);
-        lblTrans = new JLabel("Transmitted string goes here");	// Replace with sent string
+        lblTrans = new JLabel("Transmitted string goes here");    // Replace with sent string
         lblTrans.setBounds(13, 415, 200, 13);
         frame.add(lblTrans);
-        lblRec = new JLabel("Received string goes here");		// Replace with received string
+        lblRec = new JLabel("Received string goes here");        // Replace with received string
         lblRec.setBounds(383, 415, 200, 13);
         frame.add(lblRec);
 
@@ -101,6 +104,7 @@ public class Gui
         pnlTest.add(bSync);
         bAsync = new JRadioButton("Asyncronous Mode", true);
         bAsync.setBounds(8, 61, 141, 17);
+        bAsync.setEnabled(false);
         pnlTest.add(bAsync);
         ButtonGroup grp = new ButtonGroup();
         grp.add(bSync);
@@ -125,10 +129,10 @@ public class Gui
         pnlRes = new JPanel();
         pnlRes.setBorder(BorderFactory.createLineBorder(Color.black));
         pnlRes.setBounds(26, 225, 75, 47);
-        pnlRes.setBackground(Color.GREEN);
+        pnlRes.setBackground(Color.WHITE);
         pnlTest.add(pnlRes);
         // also to this text
-        lblStatus = new JLabel("Staus goes here");
+        lblStatus = new JLabel("Status goes here");
         lblStatus.setBounds(23, 275, 100, 13);
         pnlTest.add(lblStatus);
         // The clear input button, starts disabled
@@ -139,34 +143,72 @@ public class Gui
         pnlTest.add(btnClear);
     }
 
-    public void setBtnRunEnabled(boolean enabled){
+    /**
+     * Triggers the button Run.
+     *
+     * @param enabled true on,false off
+     */
+    public void setBtnRunEnabled(boolean enabled) {
         btnRun.setEnabled(enabled);
     }
 
-    public void setBtnClearEnabled(boolean enabled){
+    /**
+     * Triggers the button clear.
+     *
+     * @param enabled true on,false off
+     */
+    public void setBtnClearEnabled(boolean enabled) {
         btnClear.setEnabled(enabled);
     }
 
-    public String getInputText(){
+    /**
+     * Returns the input text from the GUI
+     *
+     * @return Teh input string
+     */
+    public String getInputText() {
         return txtTrans.getText();
     }
 
+    /**
+     * * Adds an text to the text area for the writer
+     *
+     * @param text Text to be displayed
+     */
     public void printWriter(String text) {
         listW.append(text);
     }
 
-    public void printReader(String text){
+    /**
+     * Adds an text to the text area for the reader
+     *
+     * @param text Text to be displayed
+     */
+    public void printReader(String text) {
         listR.append(text);
     }
 
+    /**
+     * Prints the result on the gui
+     *
+     * @param text result
+     */
     public void printReaderString(String text) {
         lblRec.setText(text);
     }
 
+    /**
+     * Prints the result on the gui
+     *
+     * @param text result
+     */
     public void printWriterString(String text) {
         lblTrans.setText(text);
     }
 
+    /**
+     * Clears the GUI
+     */
     public void clearText() {
         listW.setText(null);
         listR.setText(null);
@@ -174,18 +216,30 @@ public class Gui
         lblRec.setText("Received string goes here");
     }
 
+    /**
+     * Setts the result on the gui
+     *
+     * @param color   The color of the panel
+     * @param message The result message that should be displayed.
+     */
+    public void setResult(Color color, String message) {
+        pnlRes.setBackground(color);
+        lblStatus.setText(message);
+    }
 
-    private class ButtonListener implements ActionListener{
+    /**
+     * Class for listening to the buttons
+     */
+    private class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
             Object btnPressed = e.getSource();
 
-            if (btnPressed.equals(btnRun)){
-                boolean b = bSync.isSelected();
-                controller.startRun(b);
-            }else if (btnPressed.equals(btnClear)){
+            if (btnPressed.equals(btnRun)) {
+                controller.startRun();
+            } else if (btnPressed.equals(btnClear)) {
                 controller.clear();
             }
         }
