@@ -15,7 +15,7 @@ public class Controller {
     private WriterTask writerTask;
     private Thread readerThread;
     private Thread writerThread;
-    private Assignment2.CharacterBuffer characterBuffer;
+    private CharacterBuffer characterBuffer;
 
     /**
      * A constructor
@@ -23,7 +23,7 @@ public class Controller {
     public Controller() {
 
         //Creates new instances for the following objects
-        characterBuffer = new Assignment2.CharacterBuffer();
+        characterBuffer = new CharacterBuffer();
         readerTask = new ReaderTask(this, characterBuffer);
         writerTask = new WriterTask(this, characterBuffer);
         gui = new Gui(this);

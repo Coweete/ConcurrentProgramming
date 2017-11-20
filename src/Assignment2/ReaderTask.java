@@ -20,7 +20,7 @@ public class ReaderTask implements Runnable {
     /**
      * The constructor
      *
-     * @param controller                  Controller object
+     * @param controller      Controller object
      * @param characterBuffer Sync buffer
      */
     public ReaderTask(Controller controller, CharacterBuffer characterBuffer) {
@@ -66,13 +66,13 @@ public class ReaderTask implements Runnable {
                 }
 
             } else {
+                Character temp = characterBuffer.getCharacter();
+                if (temp != null) {
+                    controller.printReader("Reading " + temp + "\n");
+                    chars[counter] = temp;
 
-                char temp = characterBuffer.getCharacter();
-                controller.printReader("Reading " + temp + "\n");
-                chars[counter] = temp;
+                }
                 counter++;
-
-
                 //Checks if there should be
                 // more in the buffer or not
                 if (counter >= endLength) {
@@ -87,6 +87,7 @@ public class ReaderTask implements Runnable {
                     controller.printReaderString(res);
                     controller.compareStrings(res);
                 }
+
             }
 
             try {

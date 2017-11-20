@@ -37,7 +37,6 @@ public class CharacterBuffer {
             return false;
         } else {
             character = c;
-            notify();
             return true;
         }
     }
@@ -56,7 +55,12 @@ public class CharacterBuffer {
      *
      * @return a char
      */
-    public char getCharacter() {
+    public Character getCharacter() {
+        Character temp = character;
+        character = null;
+        if (temp != null) {
+            return temp;
+        }
         return character;
     }
 
