@@ -5,21 +5,43 @@ import java.util.Random;
 public class Factory implements Runnable {
 
     private FoodItem[] foodBuffer;
-    private GUISemaphore guiSemaphore;
-    private boolean isRunning = false;
+    private boolean isRunning;
     private Storage storage;
     private Random random;
 
-    public Factory(GUISemaphore guiSemaphore, Storage storage) {
-        this.guiSemaphore = guiSemaphore;
+    public Factory(Storage storage) {
         this.storage = storage;
         random = new Random();
+        isRunning = false;
+        initFoodItems();
     }
 
     @Override
     public void run() {
 
+        System.out.println("Before running");
+
         while (isRunning) {
+
+            FoodItem newItem = foodBuffer[random.nextInt(20)];
+            System.out.println("Factory");
+
+            if (storage.addToQueue(newItem)) {
+                System.out.println("Factory True");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Factory False");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
 
         }
 
@@ -27,6 +49,7 @@ public class Factory implements Runnable {
 
 
     private void initFoodItems() {
+        System.out.println("Init foods");
         foodBuffer = new FoodItem[20];
         foodBuffer[0] = new FoodItem("Milk", 1.1, 0.5);
         foodBuffer[1] = new FoodItem("Cream", 0.6, 0.1);
@@ -51,6 +74,7 @@ public class Factory implements Runnable {
     }
 
     public void setRunning(boolean running) {
+        System.out.println("Set running: " + running);
         isRunning = running;
     }
 }

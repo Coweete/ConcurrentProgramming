@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.Semaphore;
 
 /**
  * The GUI for assignment 3
@@ -76,16 +77,16 @@ public class GUISemaphore {
     /**
      * Constructor, creates the window
      */
-    public GUISemaphore(Storage storage) {
-        this.storage = storage;
+    public GUISemaphore() {
+        this.storage = new Storage(this, 100);
 
-        scan = new Factory(this,storage);
-        arla = new Factory(this,storage);
-        axfood = new Factory(this,storage);
+        arla = new Factory(storage);
+        axfood = new Factory(storage);
+        scan = new Factory(storage);
 
-        ica = new Truck(storage,this);
-        coop = new Truck(storage,this);
-        citygross = new Truck(storage,this);
+        ica = new Truck(storage, this, "ica", 10.0, 5.0);
+        coop = new Truck(storage, this, "coop", 15.0, 20.0);
+        citygross = new Truck(storage, this, "citygross", 17.5, 23.0);
     }
 
     /**
@@ -375,12 +376,66 @@ public class GUISemaphore {
         frame.add(pnlCons);
     }
 
+    public boolean[] isContinueLoading() {
+        boolean[] booleans = new boolean[3];
+        booleans[0] = chkIcaCont.isSelected();//ica check box
+        booleans[1] = chkCoopCont.isSelected();//coop check box
+        booleans[2] = chkCGCont.isSelected();//citygross check box
+        return booleans;
+    }
+
+    public void printIca(String name) {
+        if (name.equals("")) {
+            lstIca.setText("");
+        } else {
+            lstIca.append(name);
+        }
+
+    }
+
+    public void printCoop(String name) {
+        if (name.equals("")) {
+            lstCoop.setText("");
+        } else {
+            lstCoop.append(name);
+        }
+
+    }
+
+    public void printCityGross(String name) {
+        if (name.equals("")) {
+            lstCG.setText("");
+        } else {
+            lstCG.append(name);
+        }
+    }
+
+    public void printIcaNumbers(int item, double currentVolume, double currentWeight) {
+        lblIcaItems.setText(String.valueOf(item));
+        lblIcaVolume.setText(String.valueOf(currentVolume));
+        lblIcaWeight.setText(String.valueOf(currentWeight));
+    }
+
+    public void printCoopNumbers(int item, double currentVolume, double currentWeight) {
+        lblCoopItems.setText(String.valueOf(item));
+        lblCoopVolume.setText(String.valueOf(currentVolume));
+        lblCoopWeight.setText(String.valueOf(currentWeight));
+    }
+
+    public void printCityGrossNumbers(int item, double currentVolume, double currentWeight) {
+        lblCGItems.setText(String.valueOf(item));
+        lblCGVolume.setText(String.valueOf(currentVolume));
+        lblCGWeight.setText(String.valueOf(currentWeight));
+    }
+
     private class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
             Object btnPressed = e.getSource();
+
+            System.out.println("Button pressed");
 
             if (btnPressed.equals(btnStartA)) {
                 arla.setRunning(true);
@@ -415,16 +470,19 @@ public class GUISemaphore {
             } else if (btnPressed.equals(btnIcaStart)) {
                 ica.setRunning(true);
                 icaThread = new Thread(ica);
+                icaThread.start();
                 btnIcaStart.setEnabled(false);
                 btnIcaStop.setEnabled(true);
             } else if (btnPressed.equals(btnCoopStart)) {
                 coop.setRunning(true);
                 coopThread = new Thread(coop);
+                coopThread.start();
                 btnCoopStart.setEnabled(false);
                 btnCoopStop.setEnabled(true);
             } else if (btnPressed.equals(btnCGStart)) {
                 citygross.setRunning(true);
                 citygrossThread = new Thread(citygross);
+                citygrossThread.start();
                 btnCGStart.setEnabled(false);
                 btnCGStop.setEnabled(true);
             } else if (btnPressed.equals(btnIcaStop)) {
