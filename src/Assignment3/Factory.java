@@ -8,35 +8,41 @@ public class Factory implements Runnable {
     private boolean isRunning;
     private Storage storage;
     private Random random;
+    private String name;
+    private GUISemaphore guiSemaphore;
+    private boolean isIdle;
 
-    public Factory(Storage storage) {
+    public Factory(Storage storage, GUISemaphore guiSemaphore, String name) {
         this.storage = storage;
+        this.guiSemaphore = guiSemaphore;
+        this.name = name;
         random = new Random();
         isRunning = false;
+        isIdle = true;
         initFoodItems();
     }
 
     @Override
     public void run() {
 
-        System.out.println("Before running");
-
         while (isRunning) {
 
             FoodItem newItem = foodBuffer[random.nextInt(20)];
-            System.out.println("Factory");
 
             if (storage.addToQueue(newItem)) {
-                System.out.println("Factory True");
+                if (isIdle) {
+                    printIdle();
+                    isIdle = false;
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("Factory False");
+                printIdle();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(4000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -47,9 +53,41 @@ public class Factory implements Runnable {
 
     }
 
+    private void printIdle() {
+        System.out.println("Is idle?" + isIdle);
+        switch (name) {
+            case "arla":
+                if (!isIdle) {
+                    guiSemaphore.printArla("idle");
+                    isIdle = true;
+                } else {
+                    guiSemaphore.printArla("Producing");
+                }
+                break;
+            case "axfood":
+                if (!isIdle) {
+                    guiSemaphore.printAxfood("idle");
+                    isIdle = true;
+                } else {
+                    guiSemaphore.printAxfood("Producing");
+                }
+                break;
+            case "scan":
+                if (!isIdle) {
+                    guiSemaphore.printScan("idle");
+                    isIdle = true;
+                } else {
+                    guiSemaphore.printScan("Producing");
+                }
+                break;
+            default:
+                System.out.println("Default Factory");
+                break;
+        }
+    }
+
 
     private void initFoodItems() {
-        System.out.println("Init foods");
         foodBuffer = new FoodItem[20];
         foodBuffer[0] = new FoodItem("Milk", 1.1, 0.5);
         foodBuffer[1] = new FoodItem("Cream", 0.6, 0.1);
@@ -74,7 +112,6 @@ public class Factory implements Runnable {
     }
 
     public void setRunning(boolean running) {
-        System.out.println("Set running: " + running);
         isRunning = running;
     }
 }

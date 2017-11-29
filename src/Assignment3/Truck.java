@@ -7,11 +7,12 @@ public class Truck implements Runnable {
     private double currentWeight;
     private double totalVolume;
     private double currentVolume;
+    private String name;
     private GUISemaphore guiSemaphore;
     private Storage storage;
     private boolean isRunning = false;
     private boolean[] loading = new boolean[3];
-    private String name;
+
 
     public Truck(Storage storage, GUISemaphore guiSemaphore, String name, double totalVolume, double totalWeight) {
         this.storage = storage;
@@ -28,14 +29,20 @@ public class Truck implements Runnable {
     public void run() {
 
         while (isRunning) {
+            System.out.println("Running truck");
             FoodItem foodItem = storage.getFromQueue();
             if (foodItem != null) {
+                System.out.println("Total volume: " + totalVolume);
+                System.out.println("Current volume with add:" + (foodItem.getVolume() + currentVolume));
+                System.out.println("Food item volume:" + foodItem.getVolume());
                 if (((foodItem.getVolume() + currentVolume) < totalVolume) && ((foodItem.getWeight() + currentWeight) < totalWeight)) {
-                    currentVolume = totalVolume + foodItem.getVolume();
-                    currentWeight = totalWeight + foodItem.getWeight();
+                    System.out.println("In if");
+                    currentVolume = currentVolume + foodItem.getVolume();
+                    currentWeight = currentWeight + foodItem.getWeight();
                     item++;
                     printText(foodItem);
                 } else {
+                    System.out.println("Else");
                     checkIfContinue();
                 }
                 try {
@@ -54,6 +61,7 @@ public class Truck implements Runnable {
     }
 
     private void checkIfContinue() {
+        System.out.println("Check for continue?");
         try {
             Thread.sleep(5000);
             loading = guiSemaphore.isContinueLoading();
@@ -99,6 +107,7 @@ public class Truck implements Runnable {
     }
 
     private void printText(FoodItem foodItem) {
+        System.out.println("Trying too print out info from truck");
         switch (name) {
             case "ica":
                 guiSemaphore.printIca(foodItem.getName() + "\n");
@@ -110,7 +119,7 @@ public class Truck implements Runnable {
                 break;
             case "citygross":
                 guiSemaphore.printCityGross(foodItem.getName() + "\n");
-                guiSemaphore.printCoopNumbers(item, currentVolume, currentWeight);
+                guiSemaphore.printCityGrossNumbers(item, currentVolume, currentWeight);
                 break;
             default:
                 System.out.println("Default");

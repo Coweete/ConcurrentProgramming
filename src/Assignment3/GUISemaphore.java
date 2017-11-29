@@ -73,20 +73,23 @@ public class GUISemaphore {
     private Thread coopThread;
     private Truck citygross;
     private Thread citygrossThread;
+    private int storageSize = 100;
+    private JLabel lblmax;
 
     /**
      * Constructor, creates the window
      */
     public GUISemaphore() {
-        this.storage = new Storage(this, 100);
+        lblmax = new JLabel("Max capacity (items):");
+        this.storage = new Storage(this, storageSize,lblmax);
 
-        arla = new Factory(storage);
-        axfood = new Factory(storage);
-        scan = new Factory(storage);
+        arla = new Factory(storage, this, "arla");
+        axfood = new Factory(storage, this, "axfood");
+        scan = new Factory(storage, this, "scan");
 
-        ica = new Truck(storage, this, "ica", 10.0, 5.0);
-        coop = new Truck(storage, this, "coop", 15.0, 20.0);
-        citygross = new Truck(storage, this, "citygross", 17.5, 23.0);
+        ica = new Truck(storage, this, "ica", 25.0, 50.0);
+        coop = new Truck(storage, this, "coop", 50.0, 200.0);
+        citygross = new Truck(storage, this, "citygross", 75.0, 100.0);
     }
 
     /**
@@ -118,8 +121,9 @@ public class GUISemaphore {
         bufferStatus.setBounds(155, 37, 500, 23);
         bufferStatus.setBorder(BorderFactory.createLineBorder(Color.black));
         bufferStatus.setForeground(Color.GREEN);
+        bufferStatus.setMaximum(storageSize);
         pnlBuffer.add(bufferStatus);
-        JLabel lblmax = new JLabel("Max capacity (items):");
+        //lblmax = new JLabel("Max capacity (items):");
         lblmax.setBounds(10, 42, 126, 13);
         pnlBuffer.add(lblmax);
         frame.add(pnlBuffer);
@@ -428,6 +432,34 @@ public class GUISemaphore {
         lblCGWeight.setText(String.valueOf(currentWeight));
     }
 
+    public void updateProgressbar(int sum) {
+        bufferStatus.setValue(sum);
+    }
+
+    public void printScan(String text) {
+        lblStatusS.setText(text);
+    }
+
+    public void printArla(String text) {
+        lblStatusA.setText(text);
+    }
+
+    public void printAxfood(String text) {
+        lblStatusX.setText(text);
+    }
+
+    public void printCityGrossStatus(String text) {
+        lblCGStatus.setText(text);
+    }
+
+    public void printCoopStatus(String text) {
+        lblCoopStatus.setText(text);
+    }
+
+    public void printIcaStatus(String text) {
+        lblIcaStatus.setText(text);
+    }
+
     private class ButtonListener implements ActionListener {
 
         @Override
@@ -441,62 +473,74 @@ public class GUISemaphore {
                 arla.setRunning(true);
                 arlaThread = new Thread(arla);
                 arlaThread.start();
+                printArla("Producing");
                 btnStartA.setEnabled(false);
                 btnStopA.setEnabled(true);
             } else if (btnPressed.equals(btnStartS)) {
                 scan.setRunning(true);
-                scanThread = new Thread(scanThread);
+                scanThread = new Thread(scan);
                 scanThread.start();
+                printScan("Producing");
                 btnStartS.setEnabled(false);
                 btnStopS.setEnabled(true);
             } else if (btnPressed.equals(btnStartX)) {
                 axfood.setRunning(true);
                 axfoodThread = new Thread(axfood);
                 axfoodThread.start();
+                printAxfood("Producing");
                 btnStartX.setEnabled(false);
                 btnStopX.setEnabled(true);
             } else if (btnPressed.equals(btnStopA)) {
                 arla.setRunning(false);
                 btnStartA.setEnabled(true);
                 btnStopA.setEnabled(false);
+                printArla("Stop");
             } else if (btnPressed.equals(btnStopX)) {
                 axfood.setRunning(false);
                 btnStopX.setEnabled(false);
                 btnStartX.setEnabled(true);
+                printAxfood("Stop");
             } else if (btnPressed.equals(btnStopS)) {
                 scan.setRunning(false);
                 btnStartS.setEnabled(true);
                 btnStopS.setEnabled(false);
+                printScan("Stop");
             } else if (btnPressed.equals(btnIcaStart)) {
                 ica.setRunning(true);
                 icaThread = new Thread(ica);
                 icaThread.start();
+                printIcaStatus("Running");
                 btnIcaStart.setEnabled(false);
                 btnIcaStop.setEnabled(true);
             } else if (btnPressed.equals(btnCoopStart)) {
                 coop.setRunning(true);
                 coopThread = new Thread(coop);
                 coopThread.start();
+                printCoopStatus("Running");
                 btnCoopStart.setEnabled(false);
                 btnCoopStop.setEnabled(true);
             } else if (btnPressed.equals(btnCGStart)) {
                 citygross.setRunning(true);
                 citygrossThread = new Thread(citygross);
                 citygrossThread.start();
+                printCityGrossStatus("Running");
                 btnCGStart.setEnabled(false);
                 btnCGStop.setEnabled(true);
             } else if (btnPressed.equals(btnIcaStop)) {
                 ica.setRunning(false);
                 btnIcaStart.setEnabled(true);
                 btnIcaStop.setEnabled(false);
+                printIcaStatus("Stop");
             } else if (btnPressed.equals(btnCoopStop)) {
                 coop.setRunning(false);
                 btnCoopStart.setEnabled(true);
                 btnCoopStop.setEnabled(false);
+                printCoopStatus("Stop");
             } else if (btnPressed.equals(btnCGStop)) {
                 citygross.setRunning(false);
                 btnCGStart.setEnabled(true);
                 btnCGStop.setEnabled(false);
+                printCityGrossStatus("Stop");
             }
         }
     }
