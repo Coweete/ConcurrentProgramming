@@ -2,7 +2,7 @@ package Assignment3;
 
 public class Truck implements Runnable {
 
-    private int item;
+    private int currentItem, totalItem;
     private double totalWeight;
     private double currentWeight;
     private double totalVolume;
@@ -14,35 +14,34 @@ public class Truck implements Runnable {
     private boolean[] loading = new boolean[3];
 
 
-    public Truck(Storage storage, GUISemaphore guiSemaphore, String name, double totalVolume, double totalWeight) {
+    public Truck(Storage storage, GUISemaphore guiSemaphore, String name, double totalVolume, double totalWeight, int totalItem) {
         this.storage = storage;
         this.guiSemaphore = guiSemaphore;
         this.name = name;
         this.totalVolume = totalVolume;
         this.totalWeight = totalWeight;
+        this.totalItem = totalItem;
         currentVolume = 0.0;
         currentWeight = 0.0;
-        item = 0;
+        currentItem = 0;
     }
 
     @Override
     public void run() {
 
         while (isRunning) {
-            System.out.println("Running truck");
+            System.out.println("Running truck V1");
             FoodItem foodItem = storage.getFromQueue();
             if (foodItem != null) {
-                System.out.println("Total volume: " + totalVolume);
-                System.out.println("Current volume with add:" + (foodItem.getVolume() + currentVolume));
-                System.out.println("Food item volume:" + foodItem.getVolume());
-                if (((foodItem.getVolume() + currentVolume) < totalVolume) && ((foodItem.getWeight() + currentWeight) < totalWeight)) {
+                if (((foodItem.getVolume() + currentVolume) < totalVolume) &&
+                        ((foodItem.getWeight() + currentWeight) < totalWeight) &&
+                        ((currentItem + 1) < totalItem)){
                     System.out.println("In if");
                     currentVolume = currentVolume + foodItem.getVolume();
                     currentWeight = currentWeight + foodItem.getWeight();
-                    item++;
+                    currentItem++;
                     printText(foodItem);
                 } else {
-                    System.out.println("Else");
                     checkIfContinue();
                 }
                 try {
@@ -63,16 +62,22 @@ public class Truck implements Runnable {
     private void checkIfContinue() {
         System.out.println("Check for continue?");
         try {
-            Thread.sleep(5000);
             loading = guiSemaphore.isContinueLoading();
+            for (int i = 0; i < loading.length; i++) {
+                System.out.println("i:" + loading[i]);
+            }
             //Print out process on the correct label
             switch (name) {
                 case "ica":
                     //Ica
                     if (loading[0]) {
-                        totalVolume = 0;
-                        totalWeight = 0;
-                        item = 0;
+                        currentVolume = 0;
+                        currentWeight = 0;
+                        currentItem = 0;
+                        guiSemaphore.printIcaStatus("Full");
+                        Thread.sleep(5000);
+                        guiSemaphore.printIca("");
+                        guiSemaphore.printIcaNumbers(0, 0, 0);
                     } else {
                         isRunning = false;
                     }
@@ -80,9 +85,13 @@ public class Truck implements Runnable {
                 case "coop":
                     //Coop
                     if (loading[1]) {
-                        totalVolume = 0;
-                        totalWeight = 0;
-                        item = 0;
+                        currentVolume = 0;
+                        currentWeight = 0;
+                        currentItem = 0;
+                        guiSemaphore.printCoopStatus("Full");
+                        Thread.sleep(5000);
+                        guiSemaphore.printCoop("");
+                        guiSemaphore.printCoopNumbers(0, 0, 0);
                     } else {
                         isRunning = false;
                     }
@@ -90,9 +99,13 @@ public class Truck implements Runnable {
                 case "citygross":
                     //Citygross
                     if (loading[2]) {
-                        totalVolume = 0;
-                        totalWeight = 0;
-                        item = 0;
+                        currentVolume = 0;
+                        currentWeight = 0;
+                        currentItem = 0;
+                        guiSemaphore.printCityGrossStatus("Full");
+                        Thread.sleep(5000);
+                        guiSemaphore.printCityGross("");
+                        guiSemaphore.printCityGrossNumbers(0, 0, 0);
                     } else {
                         isRunning = false;
                     }
@@ -101,6 +114,7 @@ public class Truck implements Runnable {
                     System.out.println("Default");
                     break;
             }
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -111,15 +125,15 @@ public class Truck implements Runnable {
         switch (name) {
             case "ica":
                 guiSemaphore.printIca(foodItem.getName() + "\n");
-                guiSemaphore.printIcaNumbers(item, currentVolume, currentWeight);
+                guiSemaphore.printIcaNumbers(currentItem, currentVolume, currentWeight);
                 break;
             case "coop":
                 guiSemaphore.printCoop(foodItem.getName() + "\n");
-                guiSemaphore.printCoopNumbers(item, currentVolume, currentWeight);
+                guiSemaphore.printCoopNumbers(currentItem, currentVolume, currentWeight);
                 break;
             case "citygross":
                 guiSemaphore.printCityGross(foodItem.getName() + "\n");
-                guiSemaphore.printCityGrossNumbers(item, currentVolume, currentWeight);
+                guiSemaphore.printCityGrossNumbers(currentItem, currentVolume, currentWeight);
                 break;
             default:
                 System.out.println("Default");

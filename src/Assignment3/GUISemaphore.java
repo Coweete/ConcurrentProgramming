@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.Semaphore;
 
 /**
  * The GUI for assignment 3
@@ -61,17 +60,17 @@ public class GUISemaphore {
 
     private ButtonListener buttonListener;
     private Storage storage;
-    private Factory scan;
+    private FactoryV2 scan;
     private Thread scanThread;
-    private Factory arla;
+    private FactoryV2 arla;
     private Thread arlaThread;
-    private Factory axfood;
+    private FactoryV2 axfood;
     private Thread axfoodThread;
-    private Truck ica;
+    private TruckV2 ica;
     private Thread icaThread;
-    private Truck coop;
+    private TruckV2 coop;
     private Thread coopThread;
-    private Truck citygross;
+    private TruckV2 citygross;
     private Thread citygrossThread;
     private int storageSize = 100;
     private JLabel lblmax;
@@ -80,31 +79,49 @@ public class GUISemaphore {
      * Constructor, creates the window
      */
     public GUISemaphore() {
-        lblmax = new JLabel("Max capacity (items):");
-        this.storage = new Storage(this, storageSize,lblmax);
+        start();
+        this.storage = new Storage(storageSize, lblmax, bufferStatus);
 
-        arla = new Factory(storage, this, "arla");
-        axfood = new Factory(storage, this, "axfood");
-        scan = new Factory(storage, this, "scan");
+        //Factory V1
+        //arla = new Factory(storage, this, "arla");
+        //axfood = new Factory(storage, this, "axfood");
+        //scan = new Factory(storage, this, "scan");
+        //Factory V2
+        arla = new FactoryV2(storage, lblStatusA);
+        scan = new FactoryV2(storage, lblStatusS);
+        axfood = new FactoryV2(storage, lblStatusX);
 
-        ica = new Truck(storage, this, "ica", 25.0, 50.0);
-        coop = new Truck(storage, this, "coop", 50.0, 200.0);
-        citygross = new Truck(storage, this, "citygross", 75.0, 100.0);
+        //Truck V1
+        //ica = new Truck(storage, this, "ica", 25.0, 50.0,50);
+        //coop = new Truck(storage, this, "coop", 50.0, 200.0,50);
+        //citygross = new Truck(storage, this, "citygross", 75.0, 100.0,50);
+        //Truck V2
+        ica = new TruckV2(50, 200.0, 100.0, lblIcaItems, lblIcaVolume,
+                lblIcaWeight, lblIcaStatus, chkIcaCont, storage, lstIca);
+        coop = new TruckV2(100, 500.0, 450.0, lblCoopItems, lblCoopVolume,
+                lblCoopWeight, lblCoopStatus, chkCoopCont, storage, lstCoop);
+        citygross = new TruckV2(40, 100.0, 50.0, lblCGItems, lblCGVolume,
+                lblCGWeight, lblCGStatus, chkCGCont, storage, lstCG);
+        show();
     }
 
     /**
      * Starts the application
      */
-    public void start() {
+    private void start() {
         frame = new JFrame();
         frame.setBounds(0, 0, 730, 526);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(null);
         frame.setTitle("Food Supply System");
         initializeGUI();                    // Fill in components
-        frame.setVisible(true);
+        frame.setVisible(false);
         frame.setResizable(false);            // Prevent user from change size
         frame.setLocationRelativeTo(null);    // Start middle screen
+    }
+
+    private void show() {
+        frame.setVisible(true);
     }
 
     /**
@@ -123,7 +140,7 @@ public class GUISemaphore {
         bufferStatus.setForeground(Color.GREEN);
         bufferStatus.setMaximum(storageSize);
         pnlBuffer.add(bufferStatus);
-        //lblmax = new JLabel("Max capacity (items):");
+        lblmax = new JLabel("Max capacity (items):");
         lblmax.setBounds(10, 42, 126, 13);
         pnlBuffer.add(lblmax);
         frame.add(pnlBuffer);
@@ -385,6 +402,10 @@ public class GUISemaphore {
         booleans[0] = chkIcaCont.isSelected();//ica check box
         booleans[1] = chkCoopCont.isSelected();//coop check box
         booleans[2] = chkCGCont.isSelected();//citygross check box
+        System.out.println("In continue");
+        System.out.println("Ica: " + chkIcaCont.isSelected());
+        System.out.println("Coop: " + chkCoopCont.isSelected());
+        System.out.println("Cg: " + chkCGCont.isSelected());
         return booleans;
     }
 
