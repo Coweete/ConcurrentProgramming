@@ -66,11 +66,11 @@ public class GUISemaphore {
     private Thread arlaThread;
     private FactoryV2 axfood;
     private Thread axfoodThread;
-    private TruckV2 ica;
+    private Truck ica;
     private Thread icaThread;
-    private TruckV2 coop;
+    private Truck coop;
     private Thread coopThread;
-    private TruckV2 citygross;
+    private Truck citygross;
     private Thread citygrossThread;
     private int storageSize = 100;
     private JLabel lblmax;
@@ -82,25 +82,14 @@ public class GUISemaphore {
         start();
         this.storage = new Storage(storageSize, lblmax, bufferStatus);
 
-        //Factory V1
-        //arla = new Factory(storage, this, "arla");
-        //axfood = new Factory(storage, this, "axfood");
-        //scan = new Factory(storage, this, "scan");
-        //Factory V2
         arla = new FactoryV2(storage, lblStatusA);
         scan = new FactoryV2(storage, lblStatusS);
         axfood = new FactoryV2(storage, lblStatusX);
-
-        //Truck V1
-        //ica = new Truck(storage, this, "ica", 25.0, 50.0,50);
-        //coop = new Truck(storage, this, "coop", 50.0, 200.0,50);
-        //citygross = new Truck(storage, this, "citygross", 75.0, 100.0,50);
-        //Truck V2
-        ica = new TruckV2(50, 200.0, 100.0, lblIcaItems, lblIcaVolume,
+        ica = new Truck(50, 200.0, 100.0, lblIcaItems, lblIcaVolume,
                 lblIcaWeight, lblIcaStatus, chkIcaCont, storage, lstIca);
-        coop = new TruckV2(100, 500.0, 450.0, lblCoopItems, lblCoopVolume,
+        coop = new Truck(100, 500.0, 450.0, lblCoopItems, lblCoopVolume,
                 lblCoopWeight, lblCoopStatus, chkCoopCont, storage, lstCoop);
-        citygross = new TruckV2(40, 100.0, 50.0, lblCGItems, lblCGVolume,
+        citygross = new Truck(40, 100.0, 50.0, lblCGItems, lblCGVolume,
                 lblCGWeight, lblCGStatus, chkCGCont, storage, lstCG);
         show();
     }
@@ -397,90 +386,9 @@ public class GUISemaphore {
         frame.add(pnlCons);
     }
 
-    public boolean[] isContinueLoading() {
-        boolean[] booleans = new boolean[3];
-        booleans[0] = chkIcaCont.isSelected();//ica check box
-        booleans[1] = chkCoopCont.isSelected();//coop check box
-        booleans[2] = chkCGCont.isSelected();//citygross check box
-        System.out.println("In continue");
-        System.out.println("Ica: " + chkIcaCont.isSelected());
-        System.out.println("Coop: " + chkCoopCont.isSelected());
-        System.out.println("Cg: " + chkCGCont.isSelected());
-        return booleans;
-    }
-
-    public void printIca(String name) {
-        if (name.equals("")) {
-            lstIca.setText("");
-        } else {
-            lstIca.append(name);
-        }
-
-    }
-
-    public void printCoop(String name) {
-        if (name.equals("")) {
-            lstCoop.setText("");
-        } else {
-            lstCoop.append(name);
-        }
-
-    }
-
-    public void printCityGross(String name) {
-        if (name.equals("")) {
-            lstCG.setText("");
-        } else {
-            lstCG.append(name);
-        }
-    }
-
-    public void printIcaNumbers(int item, double currentVolume, double currentWeight) {
-        lblIcaItems.setText(String.valueOf(item));
-        lblIcaVolume.setText(String.valueOf(currentVolume));
-        lblIcaWeight.setText(String.valueOf(currentWeight));
-    }
-
-    public void printCoopNumbers(int item, double currentVolume, double currentWeight) {
-        lblCoopItems.setText(String.valueOf(item));
-        lblCoopVolume.setText(String.valueOf(currentVolume));
-        lblCoopWeight.setText(String.valueOf(currentWeight));
-    }
-
-    public void printCityGrossNumbers(int item, double currentVolume, double currentWeight) {
-        lblCGItems.setText(String.valueOf(item));
-        lblCGVolume.setText(String.valueOf(currentVolume));
-        lblCGWeight.setText(String.valueOf(currentWeight));
-    }
-
-    public void updateProgressbar(int sum) {
-        bufferStatus.setValue(sum);
-    }
-
-    public void printScan(String text) {
-        lblStatusS.setText(text);
-    }
-
-    public void printArla(String text) {
-        lblStatusA.setText(text);
-    }
-
-    public void printAxfood(String text) {
-        lblStatusX.setText(text);
-    }
-
-    public void printCityGrossStatus(String text) {
-        lblCGStatus.setText(text);
-    }
-
-    public void printCoopStatus(String text) {
-        lblCoopStatus.setText(text);
-    }
-
-    public void printIcaStatus(String text) {
-        lblIcaStatus.setText(text);
-    }
-
+    /**
+     * Private class that listens to the buttons
+     */
     private class ButtonListener implements ActionListener {
 
         @Override
@@ -494,74 +402,74 @@ public class GUISemaphore {
                 arla.setRunning(true);
                 arlaThread = new Thread(arla);
                 arlaThread.start();
-                printArla("Producing");
+                lblStatusA.setText("Producing");
                 btnStartA.setEnabled(false);
                 btnStopA.setEnabled(true);
             } else if (btnPressed.equals(btnStartS)) {
                 scan.setRunning(true);
                 scanThread = new Thread(scan);
                 scanThread.start();
-                printScan("Producing");
+                lblStatusS.setText("Producing");
                 btnStartS.setEnabled(false);
                 btnStopS.setEnabled(true);
             } else if (btnPressed.equals(btnStartX)) {
                 axfood.setRunning(true);
                 axfoodThread = new Thread(axfood);
                 axfoodThread.start();
-                printAxfood("Producing");
+                lblStatusX.setText("Producing");
                 btnStartX.setEnabled(false);
                 btnStopX.setEnabled(true);
             } else if (btnPressed.equals(btnStopA)) {
                 arla.setRunning(false);
                 btnStartA.setEnabled(true);
                 btnStopA.setEnabled(false);
-                printArla("Stop");
+                lblStatusA.setText("Stop");
             } else if (btnPressed.equals(btnStopX)) {
                 axfood.setRunning(false);
                 btnStopX.setEnabled(false);
                 btnStartX.setEnabled(true);
-                printAxfood("Stop");
+                lblStatusX.setText("Stop");
             } else if (btnPressed.equals(btnStopS)) {
                 scan.setRunning(false);
                 btnStartS.setEnabled(true);
                 btnStopS.setEnabled(false);
-                printScan("Stop");
+                lblStatusS.setText("Stop");
             } else if (btnPressed.equals(btnIcaStart)) {
                 ica.setRunning(true);
                 icaThread = new Thread(ica);
                 icaThread.start();
-                printIcaStatus("Running");
+                lblIcaStatus.setText("Running");
                 btnIcaStart.setEnabled(false);
                 btnIcaStop.setEnabled(true);
             } else if (btnPressed.equals(btnCoopStart)) {
                 coop.setRunning(true);
                 coopThread = new Thread(coop);
                 coopThread.start();
-                printCoopStatus("Running");
+                lblCoopStatus.setText("Running");
                 btnCoopStart.setEnabled(false);
                 btnCoopStop.setEnabled(true);
             } else if (btnPressed.equals(btnCGStart)) {
                 citygross.setRunning(true);
                 citygrossThread = new Thread(citygross);
                 citygrossThread.start();
-                printCityGrossStatus("Running");
+                lblCGStatus.setText("Running");
                 btnCGStart.setEnabled(false);
                 btnCGStop.setEnabled(true);
             } else if (btnPressed.equals(btnIcaStop)) {
                 ica.setRunning(false);
                 btnIcaStart.setEnabled(true);
                 btnIcaStop.setEnabled(false);
-                printIcaStatus("Stop");
+                lblIcaStatus.setText("Stop");
             } else if (btnPressed.equals(btnCoopStop)) {
                 coop.setRunning(false);
                 btnCoopStart.setEnabled(true);
                 btnCoopStop.setEnabled(false);
-                printCoopStatus("Stop");
+                lblCoopStatus.setText("Stop");
             } else if (btnPressed.equals(btnCGStop)) {
                 citygross.setRunning(false);
                 btnCGStart.setEnabled(true);
                 btnCGStop.setEnabled(false);
-                printCityGrossStatus("Stop");
+                lblCGStatus.setText("Stop");
             }
         }
     }

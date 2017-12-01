@@ -15,7 +15,9 @@ public class Storage {
     private LinkedList<FoodItem> queue;
     private volatile int size;
     private JProgressBar jProgressBar;
-    private static Semaphore semaphore = new Semaphore(1);
+    private static Semaphore mutex = new Semaphore(1);
+    private static Semaphore readerSemaphore = new Semaphore(0);
+    private static Semaphore writerSemaphore = new Semaphore(100);
     private JLabel jLabel;
 
     /**
@@ -35,7 +37,7 @@ public class Storage {
 
     /**
      * Tries to add an item to the buffer,
-     * only one thread can access to the storage at the time fixed by semaphore.
+     * only one thread can access to the storage at the time fixed by mutex.
      *
      * @param foodItem The item to add.
      * @return True = Added to Storage, False = not added to storage.
@@ -43,54 +45,62 @@ public class Storage {
     public boolean addToQueue(FoodItem foodItem) {
         try {
             //Tries to get the key.
-            semaphore.acquire();
+            writerSemaphore.acquire();
             System.out.println("Got permit add");
             //Checks if the object can be added to the buffer.
+            mutex.acquire();
             if (!(queue.size() >= size)) {
                 queue.push(foodItem);
                 //Updates the progressbar
                 jProgressBar.setValue(queue.size());
+                mutex.release();
             } else {
-                //Releases the key
-                semaphore.release();
+                mutex.release();
+                readerSemaphore.release();
                 return false;
             }
             //Releases the key
-            semaphore.release();
+            readerSemaphore.release();
             return true;
         } catch (InterruptedException e) {
             e.printStackTrace();
             //Something went wrong.
+            mutex.release();
+            readerSemaphore.release();
             return false;
         }
     }
 
     /**
      * Tries to get an item from the buffer,
-     * only one thread can access to the storage at the time fixed by semaphore.
+     * only one thread can access to the storage at the time fixed by mutex.
      *
      * @return Null = Queue is empty, FoodItem = got something from the queue
      */
     public FoodItem getFromQueue() {
         try {
             //Gets the key
-            semaphore.acquire();
+            readerSemaphore.acquire();
             System.out.println("Got permit remove");
 
             FoodItem temp = null;
             //Checks if there is elements in the queue
+            mutex.acquire();
             if (!queue.isEmpty()) {
                 //Collects the item from the queue
                 temp = queue.pop();
                 //Updates the progressbar.
                 jProgressBar.setValue(queue.size());
+
             }
+            mutex.release();
             //Releases the key
-            semaphore.release();
+            writerSemaphore.release();
             return temp;
         } catch (InterruptedException e) {
             e.printStackTrace();
             //Something went wrong
+            writerSemaphore.release();
             return null;
         }
     }
