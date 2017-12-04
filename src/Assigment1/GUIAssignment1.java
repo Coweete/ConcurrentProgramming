@@ -71,7 +71,6 @@ public class GUIAssignment1 {
         pnlSound.setBounds(12, 12, 450, 100);
         pnlSound.setLayout(null);
 
-        //@TODO här ?
         fileChooser = new JFileChooser();
         buttonListener = new ButtonListener();
 
