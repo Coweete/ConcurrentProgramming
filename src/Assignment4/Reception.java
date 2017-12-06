@@ -2,32 +2,31 @@ package Assignment4;
 
 import java.util.Random;
 
-public class Reception  implements Runnable{
+public class Reception implements Runnable {
 
-    private boolean         isOpen;
-    private AdventurePool   adventurePool;
-    private CommonPool      commonPool;
-    private Random          random;
+    private boolean isOpen;
+    private EntranceWaitingQueue waitingQueue;
+    private Random random;
 
-    public Reception(AdventurePool adventurePool,CommonPool commonPool){
-        this.adventurePool = adventurePool;
-        this.commonPool = commonPool;
+    public Reception(EntranceWaitingQueue waitingQueue) {
+        this.waitingQueue = waitingQueue;
         random = new Random();
     }
 
     @Override
     public void run() {
-        while (isOpen){
-
+        while (isOpen) {
+            if (random.nextInt(2) == 0){
+                Customer temp = new Customer(true);
+                waitingQueue.putInAdventurePool(temp);
+            }else {
+                Customer temp = new Customer(false);
+                waitingQueue.putInCommonPool(temp);
+            }
         }
     }
 
-    public void RunReception(){
-        isOpen = true;
-        //Start here or nah ?
-    }
-
-    public boolean isOpen() {
-        return isOpen;
+    public void setOpen(boolean open) {
+        isOpen = open;
     }
 }

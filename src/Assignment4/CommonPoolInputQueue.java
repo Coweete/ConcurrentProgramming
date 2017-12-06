@@ -1,4 +1,12 @@
 package Assignment4;
 
-public class CommonPoolInputQueue {
+import java.util.LinkedList;
+
+public class CommonPoolInputQueue implements Runnable{
+
+
+    @Override
+    public void run() {
+
+    }
 }
