@@ -7,38 +7,51 @@ public class AdventurePool {
 
     private LinkedList<Customer> customers;
     private int maxGuest;
-    private JLabel label;
+    private JLabel limit;
+    private JLabel current;
 
-    public AdventurePool(int maxGuest, JLabel label) {
+    public AdventurePool(int maxGuest, JLabel limit, JLabel current) {
         this.maxGuest = maxGuest;
-        this.label = label;
+        this.limit = limit;
+        this.current = current;
+        limit.setText(String.valueOf(maxGuest));
+        current.setText(String.valueOf(0));
         customers = new LinkedList<Customer>();
     }
 
-    public void enter(Customer customer) {
+    public synchronized void enter(Customer customer) {
+        System.out.println("Trying to add into Adventure pool");
+        try {
+            while (customers.size() == maxGuest) {
+                wait();
+            }
+            customers.push(customer);
+            current.setText(String.valueOf(customers.size()));
+            //notify();
 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    //@TODO Should send a customer to the common pool
-    public Customer GetCustomerToCommon(){
+    public synchronized Customer GetCustomerToCommon() {
+        if (!customers.isEmpty()) {
+            current.setText(String.valueOf(customers.size()));
+            notify();
+            return customers.pop();
+        }
         return null;
     }
 
-    //
-    public void display(){
-
+    public synchronized boolean removeCustomer() {
+        if (!customers.isEmpty()) {
+            customers.pop();
+            current.setText(String.valueOf(customers.size()));
+            notify();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public void picture(){
-
-    }
-
-    //Return or ?
-    public void removeCustomer(){
-
-    }
-
-    public void setSign(){
-
-    }
 }

@@ -1,32 +1,32 @@
 package Assignment4;
 
+import javax.swing.*;
+
 public class EntranceWaitingQueue {
 
-    private CommonPoolInputQueue commonPoolInputQueue;
-    private AdventurePoolInputQueue adventurePoolInputQueue;
+    private int nbrOfWaiting;
+    private JLabel jLabel;
 
-    public EntranceWaitingQueue(CommonPoolInputQueue commonPoolInputQueue, AdventurePoolInputQueue adventurePoolInputQueue) {
-        this.commonPoolInputQueue = commonPoolInputQueue;
-        this.adventurePoolInputQueue = adventurePoolInputQueue;
+    public EntranceWaitingQueue(JLabel jLabel) {
+        this.jLabel = jLabel;
+        jLabel.setText(String.valueOf(0));
+        nbrOfWaiting = 0;
     }
 
-    public void putInAdventurePool(Customer customer) {
-        synchronized (adventurePoolInputQueue) {
-            try {
+    public synchronized void putInQueue() {
+        nbrOfWaiting++;
+        jLabel.setText(String.valueOf(nbrOfWaiting));
+    }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public synchronized boolean getEntrance() {
+        if (nbrOfWaiting > 0) {
+            nbrOfWaiting--;
+            jLabel.setText(String.valueOf(nbrOfWaiting));
+            return true;
+        } else {
+            return false;
         }
+
     }
 
-    public void putInCommonPool(Customer temp) {
-        synchronized (commonPoolInputQueue) {
-            try {
-
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

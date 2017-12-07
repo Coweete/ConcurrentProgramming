@@ -7,31 +7,48 @@ public class CustomerExit implements Runnable{
 
     private AdventurePool adventurePool;
     private CommonPool commonPool;
-    private int nbtExitAdventurePool;
+    private int nbrExitAdventurePool;
     private int nbrExitCommonPool;
     private Random random;
-    private JLabel commmonPoolExit;
-    private JLabel adventurePoolExit;
+    private JLabel lblCmnExit;
+    private JLabel lblAdvExit;
     private boolean isRunning;
 
-    public CustomerExit(AdventurePool adventurePool, CommonPool commonPool, JLabel commmonPoolExit, JLabel adventurePoolExit) {
+    public CustomerExit(AdventurePool adventurePool, CommonPool commonPool, JLabel lblCmnExit, JLabel lblAdvExit) {
         this.adventurePool = adventurePool;
         this.commonPool = commonPool;
-        this.commmonPoolExit = commmonPoolExit;
-        this.adventurePoolExit = adventurePoolExit;
+        this.lblCmnExit = lblCmnExit;
+        this.lblAdvExit = lblAdvExit;
         nbrExitCommonPool = 0;
-        nbtExitAdventurePool = 0;
+        nbrExitAdventurePool = 0;
+        lblCmnExit.setText(String.valueOf(nbrExitCommonPool));
+        lblAdvExit.setText(String.valueOf(nbrExitAdventurePool));
         random = new Random();
+
     }
 
     @Override
     public void run() {
-        while (isRunning){
-
+        while (true){
+                if (random.nextBoolean()){
+                    if (adventurePool.removeCustomer()){
+                        nbrExitAdventurePool++;
+                        lblAdvExit.setText(String.valueOf(nbrExitAdventurePool));
+                    }
+                }   else {
+                    if (commonPool.removeCustomer()){
+                        nbrExitCommonPool++;
+                        lblCmnExit.setText(String.valueOf(nbrExitCommonPool));
+                    }
+                }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    //outAdv & outCom
 
 
     public void setRunning(boolean running) {

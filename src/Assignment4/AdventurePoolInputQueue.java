@@ -3,7 +3,7 @@ package Assignment4;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class AdventurePoolInputQueue implements Runnable{
+public class AdventurePoolInputQueue implements Runnable {
 
     private AdventurePool adventurePool;
     private CommonPool commonPool;
@@ -21,18 +21,26 @@ public class AdventurePoolInputQueue implements Runnable{
 
     @Override
     public void run() {
-        Customer customer;
-        while (true){
-            if(random.nextInt(2) == 1){
-                //Enter Adventure pool
-                adventurePool.enter(new Customer(true));
-            }else{
-                customer = commonPool.getCustomerToAdventure();
-                if(customer != null){
+
+        while (true) {
+            System.out.println("Running Adventure pool");
+
+            if (random.nextInt(2) == 1) {
+                if (queue.getEntrance()) {
+                    adventurePool.enter(new Customer(true));
+                }
+            } else {
+                Customer customer = commonPool.getCustomerToAdventure();
+                if (customer != null) {
                     adventurePool.enter(customer);
                 }
             }
 
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
