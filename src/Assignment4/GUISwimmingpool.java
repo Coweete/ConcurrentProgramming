@@ -37,6 +37,7 @@ public class GUISwimmingpool {
     private JPanel pnlImageComAdv;    // Dito with up arrow for enter to adventure pool from common pool
 
     private Reception reception;
+    private boolean isOpen;
 
     /**
      * Constructor
@@ -55,6 +56,7 @@ public class GUISwimmingpool {
         Thread adventureThread = new Thread(adventurePoolInputQueue);
         Thread commonThread = new Thread(commonPoolInputQueue);
         Thread exitThread = new Thread(customerExit);
+        isOpen = false;
         receptionThread.start();
         adventureThread.start();
         commonThread.start();
@@ -228,6 +230,9 @@ public class GUISwimmingpool {
         frame.add(pnlImageComAdv);
     }
 
+    /**
+     * A button listener class that listens for button clicks.
+     */
     private class ButtonListener implements ActionListener {
 
         @Override
@@ -236,6 +241,15 @@ public class GUISwimmingpool {
             Object temp = e.getSource();
 
             if (temp.equals(btnOpen)) {
+                if (isOpen) {
+                    btnOpen.setText(String.valueOf("Open pool"));
+                    lblOpen.setText(String.valueOf("Closed"));
+                    isOpen = !isOpen;
+                } else {
+                    btnOpen.setText(String.valueOf("Close pool"));
+                    lblOpen.setText(String.valueOf("Open"));
+                    isOpen = !isOpen;
+                }
                 reception.triggerOpen();
             }
         }

@@ -3,7 +3,13 @@ package Assignment4;
 import javax.swing.*;
 import java.util.Random;
 
-public class CustomerExit implements Runnable{
+/**
+ * A class that takes a customer from one of the two pools and places it into
+ * the exit queue
+ *
+ * @author Jonatan Fridsten
+ */
+public class CustomerExit implements Runnable {
 
     private AdventurePool adventurePool;
     private CommonPool commonPool;
@@ -12,8 +18,15 @@ public class CustomerExit implements Runnable{
     private Random random;
     private JLabel lblCmnExit;
     private JLabel lblAdvExit;
-    private boolean isRunning;
 
+    /**
+     * The constructor for the class
+     *
+     * @param adventurePool Adventure pool
+     * @param commonPool    Common pool
+     * @param lblCmnExit    Common label output
+     * @param lblAdvExit    Adventure label output
+     */
     public CustomerExit(AdventurePool adventurePool, CommonPool commonPool, JLabel lblCmnExit, JLabel lblAdvExit) {
         this.adventurePool = adventurePool;
         this.commonPool = commonPool;
@@ -27,31 +40,32 @@ public class CustomerExit implements Runnable{
 
     }
 
+    /**
+     * The run method for this thread.
+     */
     @Override
     public void run() {
-        while (true){
-                if (random.nextBoolean()){
-                    if (adventurePool.removeCustomer()){
-                        nbrExitAdventurePool++;
-                        lblAdvExit.setText(String.valueOf(nbrExitAdventurePool));
-                    }
-                }   else {
-                    if (commonPool.removeCustomer()){
-                        nbrExitCommonPool++;
-                        lblCmnExit.setText(String.valueOf(nbrExitCommonPool));
-                    }
+        while (true) {
+            //Randomly selects which pool that the customer should leave
+            if (random.nextBoolean()) {
+                //Checks for customer
+                if (adventurePool.removeCustomer()) {
+                    nbrExitAdventurePool++;
+                    lblAdvExit.setText(String.valueOf(nbrExitAdventurePool));
                 }
+            } else {
+                //Checks for customer
+                if (commonPool.removeCustomer()) {
+                    nbrExitCommonPool++;
+                    lblCmnExit.setText(String.valueOf(nbrExitCommonPool));
+                }
+            }
+            //Try to pause the thread.
             try {
-                Thread.sleep(5000);
+                Thread.sleep(random.nextInt(800) + 100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-
-
-    public void setRunning(boolean running) {
-        isRunning = running;
     }
 }

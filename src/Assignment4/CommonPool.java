@@ -3,6 +3,11 @@ package Assignment4;
 import javax.swing.*;
 import java.util.LinkedList;
 
+/**
+ * Shared resources for the common pool
+ *
+ * @author Jonatan Fridsten
+ */
 public class CommonPool {
 
     private LinkedList<Customer> queue;
@@ -10,6 +15,13 @@ public class CommonPool {
     private JLabel limit;
     private JLabel current;
 
+    /**
+     * The constructor for the class
+     *
+     * @param maxGuest maximum number of customers
+     * @param limit    Shows the limit number of customers
+     * @param current  Shows the current number of customers
+     */
     public CommonPool(int maxGuest, JLabel limit, JLabel current) {
         this.maxGuest = maxGuest;
         this.limit = limit;
@@ -19,6 +31,11 @@ public class CommonPool {
         queue = new LinkedList<Customer>();
     }
 
+    /**
+     * Add a customer to the pool
+     *
+     * @param customer the customer that joins the pool
+     */
     public synchronized void enter(Customer customer) {
         System.out.println("Trying to add into Common pool");
         try {
@@ -27,7 +44,6 @@ public class CommonPool {
             }
             queue.push(customer);
             current.setText(String.valueOf(queue.size()));
-            //notify();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -52,6 +68,11 @@ public class CommonPool {
         return null;
     }
 
+    /**
+     * Removes a customer from the pool
+     *
+     * @return True = remove,False no remove
+     */
     public synchronized boolean removeCustomer() {
         if (!queue.isEmpty()) {
             queue.pop();
